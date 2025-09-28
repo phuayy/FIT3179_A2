@@ -17,8 +17,8 @@
   <div id="vis"></div>
 
 <script>
-  const TOPO_PATH = "./output.json";
-  const CSV_PATH  = "./ocm_ports_usage_bumped.csv";
+  const TOPO_PATH = "https://raw.githubusercontent.com/phuayy/FIT3179_Homework_W9/refs/heads/main/output.json";
+  const CSV_PATH  = "https://raw.githubusercontent.com/phuayy/FIT3179_Homework_W9/refs/heads/main/ocm_ports_usage_bumped.csv";
 
   // CSV headers (edit if different)
   const LON_FIELD = "Longitude";
@@ -42,7 +42,7 @@
 
   // 3) Stations
   const pointsLayer = {
-    data: { url: "./ocm_ports_usage_bumped.csv", format: { type: "csv" } },
+    data: { url: "https://raw.githubusercontent.com/phuayy/FIT3179_Homework_W9/refs/heads/main/ocm_ports_usage_bumped.csv", format: { type: "csv" } },
     transform: [
       { calculate: "toNumber(replace(replace(datum.Longitude, /,/g, ''), /\\s+/g, ''))", as: "lon" },
       { calculate: "toNumber(replace(replace(datum.Latitude,  /,/g, ''), /\\s+/g, ''))", as: "lat" },

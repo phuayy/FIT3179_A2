@@ -6,11 +6,11 @@
   "projection": {"type": "equalEarth"},
   "layer": [
     {
-      "data": { "url": "./output.json", "format": { "type": "topojson", "feature": "states" } },
+      "data": { "url": "https://raw.githubusercontent.com/phuayy/FIT3179_Homework_W9/refs/heads/main/output.json", "format": { "type": "topojson", "feature": "states" } },
       "mark": { "type": "geoshape", "fill": "#f3f4f6", "stroke": "white" }
     },
     {
-      "data": { "url": "./ocm_ports_usage_bumped.csv" },
+      "data": { "url": "https://raw.githubusercontent.com/phuayy/FIT3179_Homework_W9/refs/heads/main/ocm_ports_usage_bumped.csv" },
       "transform": [
         { "calculate": "toNumber(datum.lon || datum.longitude || datum.lng || datum.Longitude)", "as": "lon" },
         { "calculate": "toNumber(datum.lat || datum.latitude || datum.Latitude)",               "as": "lat" },

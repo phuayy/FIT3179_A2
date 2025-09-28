@@ -1,0 +1,39 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "width": 900,
+  "height": 520,
+  "title": "EV Charging Stations — Ports (size) & Avg Sessions/Day (color)",
+  "projection": {"type": "equalEarth"},
+  "layer": [
+    {
+      "data": { "url": "./output.json", "format": { "type": "topojson", "feature": "states" } },
+      "mark": { "type": "geoshape", "fill": "#f3f4f6", "stroke": "white" }
+    },
+    {
+      "data": { "url": "./ocm_ports_usage_bumped.csv" },
+      "transform": [
+        { "calculate": "toNumber(datum.lon || datum.longitude || datum.lng || datum.Longitude)", "as": "lon" },
+        { "calculate": "toNumber(datum.lat || datum.latitude || datum.Latitude)",               "as": "lat" },
+        { "calculate": "toNumber(datum.ports || datum.num_ports || datum.Ports)",               "as": "ports" },
+        { "calculate": "toNumber(datum.avg_sessions || datum.sessions_avg || datum.avg_per_day || datum.AvgSessions)", "as": "avg_sessions" }
+      ],
+      "mark": { "type": "circle", "opacity": 0.75, "stroke": "white", "strokeWidth": 0.5, "tooltip": {"content": "data"} },
+      "encoding": {
+        "longitude": { "field": "lon", "type": "quantitative" },
+        "latitude":  { "field": "lat", "type": "quantitative" },
+        "size": {
+          "field": "ports", "type": "quantitative",
+          "title": "Number of ports",
+          "legend": {"format": ".0f"},
+          "scale": { "range": [20, 1400] }
+        },
+        "color": {
+          "field": "avg_sessions", "type": "quantitative",
+          "title": "Avg sessions/day",
+          "legend": {"format": ".1f"},
+          "scale": {"scheme": "teals"}
+        }
+      }
+    }
+  ]
+}

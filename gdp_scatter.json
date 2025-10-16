@@ -1,0 +1,57 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "width": 900,
+  "height": 600,
+  "background": "white",
+  "title": {"text": "Malaysia State GDP — Scatter (RM million vs Rank, 2024)", "anchor": "start"},
+  "data": {
+    "url": "https://raw.githubusercontent.com/phuayy/FIT3179_Homework_Week_10/main/malaysia_state_gdp_2024_dosm.csv",
+    "format": {"type": "csv"}
+  },
+  "params": [
+    {"name": "TopN", "value": 15, "bind": {"input": "range", "min": 5, "max": 15, "step": 1}},
+    {"name": "ShowLabels", "value": true, "bind": {"input": "checkbox"}}
+  ],
+  "transform": [
+    {"calculate": "toNumber(datum['gdp_rm_million_2024'])", "as": "gdp"},
+    {"filter": "isFinite(datum.gdp)"},
+    {"filter": "datum.state !== 'Malaysia (total)' && datum.state !== 'Unattributed / Supranational (not assigned to states)'"},
+    {"window": [{"op": "rank", "as": "rank"}], "sort": [{"field": "gdp", "order": "descending"}]},
+    {"filter": "datum.rank <= TopN"}
+  ],
+  "layer": [
+    {
+      "mark": {"type": "point", "filled": true, "size": 110, "stroke": "white", "strokeWidth": 1.2, "color": "#2563EB"},
+      "encoding": {
+        "x": {
+          "field": "gdp",
+          "type": "quantitative",
+          "title": "GDP (RM million, 2024)",
+          "axis": {"format": ","},
+          "scale": {"nice": true}
+        },
+        "y": {
+          "field": "rank",
+          "type": "quantitative",
+          "title": "Rank (1 = highest)",
+          "scale": {"reverse": true, "nice": false},
+          "axis": {"tickMinStep": 1}
+        },
+        "tooltip": [
+          {"field": "state", "title": "State"},
+          {"field": "rank", "title": "Rank", "type": "quantitative"},
+          {"field": "gdp", "title": "GDP (RM mil)", "type": "quantitative", "format": ","}
+        ]
+      }
+    },
+    {
+      "transform": [{"filter": "ShowLabels"}],
+      "mark": {"type": "text", "align": "left", "baseline": "middle", "dx": 6, "fontSize": 11, "color": "#111"},
+      "encoding": {
+        "x": {"field": "gdp", "type": "quantitative"},
+        "y": {"field": "rank", "type": "quantitative"},
+        "text": {"field": "state"}
+      }
+    }
+  ]
+}

@@ -4,7 +4,7 @@
   "height": 600,
   "background": "white",
   "title": {"text": "Malaysia State GDP — Lollipop (RM million, 2024)", "anchor": "start"},
-  "data": {"url": "malaysia_state_gdp_2024_dosm.csv", "format": {"type": "csv"}},
+  "data": {"url": "https://raw.githubusercontent.com/phuayy/FIT3179_Homework_Week_10/refs/heads/main/malaysia_state_gdp_2024_dosm.csv", "format": {"type": "csv"}},
   "params": [
     {"name": "TopN", "value": 17, "bind": {"input": "range", "min": 5, "max": 17, "step": 1}},
     {"name": "ShowLabels", "value": true, "bind": {"input": "checkbox"}}

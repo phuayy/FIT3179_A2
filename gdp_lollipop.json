@@ -4,12 +4,16 @@
   "height": 600,
   "background": "white",
   "title": {"text": "Malaysia State GDP — Lollipop (RM million, 2024)", "anchor": "start"},
-  "data": {"url": "https://raw.githubusercontent.com/phuayy/FIT3179_Homework_Week_10/refs/heads/main/malaysia_state_gdp_2024_dosm.csv", "format": {"type": "csv"}},
+  "data": {
+    "url": "https://raw.githubusercontent.com/phuayy/FIT3179_Homework_Week_10/main/malaysia_state_gdp_2024_dosm.csv",
+    "format": {"type": "csv"}
+  },
   "params": [
-    {"name": "TopN", "value": 17, "bind": {"input": "range", "min": 5, "max": 17, "step": 1}},
+    {"name": "TopN", "value": 15, "bind": {"input": "range", "min": 5, "max": 15, "step": 1}},
     {"name": "ShowLabels", "value": true, "bind": {"input": "checkbox"}}
   ],
   "transform": [
+    {"filter": "datum.state !== 'Malaysia (total)' && datum.state !== 'Unattributed / Supranational (not assigned to states)'"},
     {"calculate": "toNumber(datum.gdp_rm_million_2024)", "as": "gdp"},
     {
       "joinaggregate": [
@@ -21,7 +25,12 @@
     {"filter": "datum.rank <= TopN"}
   ],
   "encoding": {
-    "y": {"field": "state", "type": "nominal", "sort": "-x", "title": null}
+    "y": {
+      "field": "state",
+      "type": "nominal",
+      "sort": {"field": "gdp", "order": "descending"},
+      "title": null
+    }
   },
   "layer": [
     {

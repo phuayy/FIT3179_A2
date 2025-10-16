@@ -1,0 +1,61 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "width": 900,
+  "height": 600,
+  "background": "white",
+  "title": {"text": "Malaysia State GDP — Lollipop (RM million, 2024)", "anchor": "start"},
+  "data": {"url": "malaysia_state_gdp_2024_dosm.csv", "format": {"type": "csv"}},
+  "params": [
+    {"name": "TopN", "value": 17, "bind": {"input": "range", "min": 5, "max": 17, "step": 1}},
+    {"name": "ShowLabels", "value": true, "bind": {"input": "checkbox"}}
+  ],
+  "transform": [
+    {"calculate": "toNumber(datum.gdp_rm_million_2024)", "as": "gdp"},
+    {
+      "joinaggregate": [
+        {"op": "sum", "field": "gdp", "as": "TotalMY"}
+      ]
+    },
+    {"calculate": "datum.gdp / datum.TotalMY * 100", "as": "share_pct"},
+    {"window": [{"op": "rank", "as": "rank"}], "sort": [{"field": "gdp", "order": "descending"}]},
+    {"filter": "datum.rank <= TopN"}
+  ],
+  "encoding": {
+    "y": {"field": "state", "type": "nominal", "sort": "-x", "title": null}
+  },
+  "layer": [
+    {
+      "mark": {"type": "rule", "strokeWidth": 3, "color": "#9ecae1"},
+      "encoding": {
+        "x": {"value": 0},
+        "x2": {"field": "gdp", "type": "quantitative"},
+        "tooltip": [
+          {"field": "state", "title": "State"},
+          {"field": "gdp", "title": "GDP (RM mil)", "type": "quantitative", "format": ","},
+          {"field": "share_pct", "title": "Share of national", "type": "quantitative", "format": ".1f"},
+          {"field": "rank", "title": "Rank", "type": "quantitative"}
+        ]
+      }
+    },
+    {
+      "mark": {"type": "point", "filled": true, "size": 110, "stroke": "white", "strokeWidth": 1.2, "color": "#2563EB"},
+      "encoding": {
+        "x": {
+          "field": "gdp",
+          "type": "quantitative",
+          "title": "GDP (RM million, 2024)",
+          "axis": {"format": ","},
+          "scale": {"nice": true}
+        }
+      }
+    },
+    {
+      "transform": [{"filter": "ShowLabels"}],
+      "mark": {"type": "text", "align": "left", "baseline": "middle", "dx": 6, "fontSize": 11, "color": "#111"},
+      "encoding": {
+        "x": {"field": "gdp", "type": "quantitative"},
+        "text": {"field": "gdp", "type": "quantitative", "format": ","}
+      }
+    }
+  ]
+}

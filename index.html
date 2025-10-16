@@ -7,6 +7,7 @@
   <script src="https://cdn.jsdelivr.net/npm/vega@5"></script>
   <script src="https://cdn.jsdelivr.net/npm/vega-lite@5"></script>
   <script src="https://cdn.jsdelivr.net/npm/vega-embed@6"></script>
+  <script src="script.js"></script>
   <style>
     :root { color-scheme: dark; }
     body { margin:0; font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif; background:#0b0b0b; color:#fff; }
@@ -15,87 +16,6 @@
 </head>
 <body>
   <div id="vis"></div>
-
-<script>
-  const TOPO_PATH = "https://raw.githubusercontent.com/phuayy/FIT3179_Homework_W9/refs/heads/main/output.json";
-  const CSV_PATH  = "https://raw.githubusercontent.com/phuayy/FIT3179_Homework_W9/refs/heads/main/ocm_ports_usage_bumped.csv";
-
-  // CSV headers (edit if different)
-  const LON_FIELD = "Longitude";
-  const LAT_FIELD = "Latitude";
-  const PORTS_F   = "ports_inferred";
-  const AVGSESS_F = "avg_sessions_per_day_site";
-
-  const num = f => `toNumber(replace(replace(datum.${f}, /,/g, ''), /\\s+/g, ''))`;
-
-  // 1) Graticules from your TopoJSON (visible + subtle)
-  const gratLayer = {
-    data:  { url: TOPO_PATH, format: { type: "topojson", feature: "ne_110m_graticules_1" } },
-    mark:  { type: "geoshape", fill: null, stroke: "#9ca3af", strokeWidth: 0.6, strokeOpacity: 0.55, strokeCap: "round" }
-  };
-
-  // 2) Malaysia land from your TopoJSON
-  const landLayer = {
-    data: { url: TOPO_PATH, format: { type: "topojson", feature: "my" } },
-    mark: { type: "geoshape", fill: "#f3f4f6", stroke: "white" }
-  };
-
-  // 3) Stations
-  const pointsLayer = {
-    data: { url: "https://raw.githubusercontent.com/phuayy/FIT3179_Homework_W9/refs/heads/main/ocm_ports_usage_bumped.csv", format: { type: "csv" } },
-    transform: [
-      { calculate: "toNumber(replace(replace(datum.Longitude, /,/g, ''), /\\s+/g, ''))", as: "lon" },
-      { calculate: "toNumber(replace(replace(datum.Latitude,  /,/g, ''), /\\s+/g, ''))", as: "lat" },
-      { calculate: "toNumber(replace(replace(datum.ports_inferred,     /,/g, ''), /\\s+/g, ''))", as: "ports" },
-      { calculate: "toNumber(replace(replace(datum.avg_sessions_per_day_site,/,/g, ''), /\\s+/g, ''))", as: "avg_sessions" },
-      { filter: "!isNaN(datum.lon) && !isNaN(datum.lat)" },
-      { calculate: "datum.is_fast_dc == 1 ? 'DC fast' : 'AC'", as: "charger_type" } // optional derived label
-    ],
-    mark: { type: "circle", opacity: 0.85, stroke: "white", strokeWidth: 0.6 },
-    encoding: {
-      longitude: { field: "lon", type: "quantitative" },
-      latitude:  { field: "lat", type: "quantitative" },
-      size:      { field: "ports_inferred", type: "quantitative", title: "Number of ports",
-                  legend: { format: ".0f" }, scale: { range: [6, 220] } },
-      color:     { field: "avg_sessions_per_day_site", type: "quantitative", title: "Avg sessions/day",
-                  legend: { format: ".1f" }, scale: { scheme: "teals" } },
-
-      tooltip: [
-        { field: " LocationTitle",   title: "Station" },
-        { field: "AddressLine1",    title: "Address" },
-        { field: "Town",            title: "Town" },
-        { field: "StateOrProvince", title: "State" },
-        { field: "Postcode",        title: "Postcode" },
-
-        { field: "avg_sessions_per_day_site",    title: "Avg sessions/day", type: "quantitative", format: ".2f" },
-        { field: "ports_inferred",           title: "Ports",            type: "quantitative", format: ".0f" },
-
-        { field: "Latitude",        title: "Latitude", type: "quantitative", format: ".5f" },
-        { field: "Longitude",       title: "Longitude", type: "quantitative", format: ".5f" }
-      ]
-    }
-  };
-
-  const spec = {
-    "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
-    "background": "#dbeeff",
-    width: 1200,
-    height: 650,
-    title: "EV Charging Stations — Ports (size) & Avg Sessions/Day (color)",
-    projection: { type: "equalEarth" }, // auto-fits to first geoshape if it has a fit; we’ll list land next to keep Malaysia scale
-    layer: [
-      gratLayer,  // draw grid first (background)
-      landLayer,  // land above the grid
-      pointsLayer // circles on top
-    ]
-  };
-
-  vegaEmbed('#vis', spec, { actions: false }).catch(err => {
-    console.error(err);
-    document.getElementById('vis').innerHTML = "<pre>"+(err.stack||err)+"</pre>";
-  });
-</script>
-
-
+  <div id="gdp_chart"></div>
 </body>
 </html>

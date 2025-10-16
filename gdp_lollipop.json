@@ -1,36 +1,46 @@
 {
-  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "$schema": "https://vega.github.io/schema/vega-lite/v6.json",
   "width": 900,
   "height": 600,
   "background": "white",
   "title": {"text": "Malaysia State GDP — Lollipop (RM million, 2024)", "anchor": "start"},
   "data": {
-    "url": "https://raw.githubusercontent.com/phuayy/FIT3179_Homework_Week_10/main/malaysia_state_gdp_2024_dosm.csv"
+    "url": "https://raw.githubusercontent.com/phuayy/FIT3179_Homework_Week_10/main/malaysia_state_gdp_2024_dosm.csv",
+    "format": {"type": "csv"}
   },
   "params": [
     {"name": "TopN", "value": 15, "bind": {"input": "range", "min": 5, "max": 15, "step": 1}},
     {"name": "ShowLabels", "value": true, "bind": {"input": "checkbox"}}
   ],
   "transform": [
-    {"calculate": "toNumber(datum['gdp_rm_million_2024'])", "as": "gdp"},
-    {"filter": "isFinite(datum.gdp)"},
-    {"filter": "datum.state !== 'Malaysia (total)' && datum.state !== 'Unattributed / Supranational (not assigned to states)'"},
+    {"calculate": "toNumber(replace(datum.gdp_rm_million_2024, /[\\\"|,]/g, ''))", "as": "gdp"},
+    {"calculate": "replace(datum.state, /\\\"/g, '')", "as": "state_clean"},
+    {"filter": "datum.state_clean !== 'Malaysia (total)' && datum.state_clean !== 'Unattributed / Supranational (not assigned to states)'"},
+    {
+      "joinaggregate": [
+        {"op": "sum", "field": "gdp", "as": "TotalMY"}
+      ]
+    },
+    {"calculate": "datum.gdp / datum.TotalMY * 100", "as": "share_pct"},
     {"window": [{"op": "rank", "as": "rank"}], "sort": [{"field": "gdp", "order": "descending"}]},
-    {"filter": "datum.rank <= TopN"},
-    {"joinaggregate": [{"op": "sum", "field": "gdp", "as": "TotalMY"}]},
-    {"calculate": "datum.gdp / datum.TotalMY * 100", "as": "share_pct"}
+    {"filter": "datum.rank <= TopN"}
   ],
   "encoding": {
-    "y": {"field": "state", "type": "nominal", "sort": {"field": "gdp", "order": "descending"}, "title": null}
+    "y": {
+      "field": "state_clean",
+      "type": "nominal",
+      "sort": {"field": "gdp", "order": "descending"},
+      "title": "State"
+    }
   },
   "layer": [
     {
       "mark": {"type": "rule", "strokeWidth": 3, "color": "#9ecae1"},
       "encoding": {
         "x": {"value": 0},
-        "x2": {"field": "gdp"},
+        "x2": {"field": "gdp", "type": "quantitative"},
         "tooltip": [
-          {"field": "state", "title": "State"},
+          {"field": "state_clean", "title": "State", "type": "nominal"},
           {"field": "gdp", "title": "GDP (RM mil)", "type": "quantitative", "format": ","},
           {"field": "share_pct", "title": "Share of national", "type": "quantitative", "format": ".1f"},
           {"field": "rank", "title": "Rank", "type": "quantitative"}
@@ -40,7 +50,13 @@
     {
       "mark": {"type": "point", "filled": true, "size": 110, "stroke": "white", "strokeWidth": 1.2, "color": "#2563EB"},
       "encoding": {
-        "x": {"field": "gdp", "type": "quantitative", "title": "GDP (RM million, 2024)", "axis": {"format": ","}, "scale": {"nice": true}}
+        "x": {
+          "field": "gdp",
+          "type": "quantitative",
+          "title": "GDP (RM million, 2024)",
+          "axis": {"format": ","},
+          "scale": {"nice": true}
+        }
       }
     },
     {
@@ -48,7 +64,7 @@
       "mark": {"type": "text", "align": "left", "baseline": "middle", "dx": 6, "fontSize": 11, "color": "#111"},
       "encoding": {
         "x": {"field": "gdp", "type": "quantitative"},
-        "text": {"field": "gdp", "type": "quantitative", "format": ","}
+        "text": {"field": "gdp", "format": ","}
       }
     }
   ]

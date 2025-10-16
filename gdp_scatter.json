@@ -50,7 +50,7 @@
         },
         "tooltip": [
           {"field": "state_clean", "title": "State", "type": "nominal"},
-          {"field": "gdp_billion", "title": "GDP (RM bil)", "type": "quantitative", "format": ".2f"}
+          {"field": "gdp_billion", "title": "Gross Domestic Product (RM billion)", "type": "quantitative", "format": ".2f"}
         ]
       }
     },

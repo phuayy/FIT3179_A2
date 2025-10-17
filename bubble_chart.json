@@ -1,0 +1,57 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "width": 683,
+  "height": 384,
+  "background": "white",
+  "title": {"text": "Population by State (2024)", "anchor": "start"},
+  "data": {
+    "url": "https://raw.githubusercontent.com/phuayy/FIT3179_Homework_Week_10/main/population_state_2024_overall_by_state.csv",
+    "format": {"type": "csv"}
+  },
+  "transform": [
+    {"calculate": "toNumber(replace(datum.population, ',', '', 'g'))", "as": "pop"},
+    {"filter": "isFinite(datum.pop)"},
+    {"joinaggregate": [{"op": "sum", "field": "pop", "as": "TotalMY"}]},
+    {"calculate": "datum.pop / datum.TotalMY * 100", "as": "share_pct"}
+  ],
+  "mark": {"type": "circle", "opacity": 0.9, "stroke": "#333", "strokeWidth": 1},
+  "encoding": {
+    "y": {
+      "field": "state",
+      "type": "nominal",
+      "title": null,
+      "sort": {"field": "pop", "order": "descending"}
+    },
+    "x": {
+      "field": "pop",
+      "type": "quantitative",
+      "title": "Population (2024)",
+      "axis": {"format": ","}
+    },
+    "size": {
+      "field": "pop",
+      "type": "quantitative",
+      "title": "Population",
+      "legend": {"format": ","},
+      "scale": {"range": [80, 2200]}
+    },
+    "color": {
+      "field": "pop",
+      "type": "quantitative",
+      "title": "Population",
+      "legend": {"format": ","},
+      "scale": {"scheme": "blues"}
+    },
+    "tooltip": [
+      {"field": "state", "title": "State"},
+      {"field": "pop", "title": "Population", "type": "quantitative", "format": ","},
+      {"field": "share_pct", "title": "Share of MY", "type": "quantitative", "format": ".1f"}
+    ]
+  },
+  "config": {
+    "view": {"stroke": null},
+    "axis": {"labelColor": "black", "titleColor": "black"},
+    "legend": {"labelColor": "black", "titleColor": "black"},
+    "title": {"color": "black"}
+  }
+}

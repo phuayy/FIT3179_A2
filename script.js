@@ -6,3 +6,5 @@ vegaEmbed("#gdp_chart", vg_gdp_lollipop, { actions: false })
   .then(function (result) {})
   .catch(console.error);
 
+var vg_population_chart = "bubble_chart.json";
+vegaEmbed("#population_chart", vg_population_chart, { actions: false }).catch(console.error);

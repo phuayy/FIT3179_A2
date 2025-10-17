@@ -1,7 +1,7 @@
 {
   "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
-  "width": 900,
-  "height": 600,
+  "width": 683,
+  "height": 384,
   "background": "white",
   "title": {"text": "Malaysia State GDP (RM billion, 2024)", "anchor": "start"},
   "data": {

@@ -3,12 +3,12 @@
   "width": "container",
   "height": 520,
   "background": "transparent",
-  "projection": {"type": "naturalEarth1"},
+  "projection": { "type": "naturalEarth1" },
   "layer": [
     {
       "data": {
-        "url": "output (1).json",
-        "format": {"type": "topojson", "feature": "custom.geo"}
+        "url": "https://raw.githubusercontent.com/phuayy/FIT3179_A2/refs/heads/main/output%20(1).json",
+        "format": { "type": "topojson", "feature": "custom.geo" }
       },
       "mark": {
         "type": "geoshape",
@@ -20,7 +20,7 @@
     {
       "data": {
         "url": "https://raw.githubusercontent.com/phuayy/FIT3179_A2/refs/heads/main/output%20(1).json",
-        "format": {"type": "topojson", "feature": "custom.geo"}
+        "format": { "type": "topojson", "feature": "custom.geo" }
       },
       "transform": [
         {
@@ -28,25 +28,33 @@
           "from": {
             "data": {
               "url": "https://raw.githubusercontent.com/phuayy/FIT3179_A2/refs/heads/main/medals_total.csv",
-              "transform": [
-                {
-                  "joinaggregate": [
-                    {"op": "sum", "field": "Total", "as": "GrandTotal"}
-                  ]
-                },
-                {
-                  "calculate": "(datum.Total / datum.GrandTotal) * 100",
-                  "as": "Percentage"
-                }
-              ]
+              "format": { "type": "csv" }
             },
             "key": "Country",
-            "fields": ["Total", "Percentage"]
+            "fields": [
+              "Total",
+              "Gold Medal",
+              "Silver Medal",
+              "Bronze Medal"
+            ]
           }
         },
+
+        { "calculate": "toNumber(datum.Total)", "as": "TotalNum" },
+        { "calculate": "toNumber(datum['Gold Medal'])", "as": "GoldNum" },
+        { "calculate": "toNumber(datum['Silver Medal'])", "as": "SilverNum" },
+        { "calculate": "toNumber(datum['Bronze Medal'])", "as": "BronzeNum" },
+
         {
-          "filter": "datum.Percentage > 0"
-        }
+          "joinaggregate": [
+            { "op": "sum", "field": "TotalNum", "as": "GrandTotal" }
+          ]
+        },
+        {
+          "calculate": "datum.GrandTotal > 0 && isValid(datum.TotalNum) ? (datum.TotalNum / datum.GrandTotal) * 100 : null",
+          "as": "Percentage"
+        },
+        { "filter": "isValid(datum.Percentage) && datum.Percentage > 0" }
       ],
       "mark": {
         "type": "geoshape",
@@ -57,10 +65,8 @@
         "color": {
           "field": "Percentage",
           "type": "quantitative",
-          "title": "Percentage of Total Medals",
-          "scale": {
-            "scheme": "viridis"
-          },
+          "title": "Share of total medals (%)",
+          "scale": { "scheme": "blues" },
           "legend": {
             "titleColor": "#FFFFFF",
             "labelColor": "#FFFFFF",
@@ -68,20 +74,15 @@
           }
         },
         "tooltip": [
-          {
-            "field": "properties.name",
-            "type": "nominal",
-            "title": "Country"
-          },
-          {
-            "field": "Total",
-            "type": "quantitative",
-            "title": "Total Medals"
-          },
+          { "field": "properties.name", "type": "nominal", "title": "Country" },
+          { "field": "GoldNum", "type": "quantitative", "title": "Gold" },
+          { "field": "SilverNum", "type": "quantitative", "title": "Silver" },
+          { "field": "BronzeNum", "type": "quantitative", "title": "Bronze" },
+          { "field": "TotalNum", "type": "quantitative", "title": "Total Medals" },
           {
             "field": "Percentage",
             "type": "quantitative",
-            "title": "Percentage of Total",
+            "title": "% of Total",
             "format": ".2f"
           }
         ]
@@ -90,7 +91,7 @@
     {
       "data": {
         "url": "https://raw.githubusercontent.com/phuayy/FIT3179_A2/refs/heads/main/output%20(1).json",
-        "format": {"type": "topojson", "feature": "ne_110m_graticules_30"}
+        "format": { "type": "topojson", "feature": "ne_110m_graticules_30" }
       },
       "mark": {
         "type": "geoshape",

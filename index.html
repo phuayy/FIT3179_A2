@@ -10,34 +10,53 @@
   <script src="script.js" defer></script>
   <style>
     :root { color-scheme: dark; }
+
     body {
       margin: 0;
       font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
       background: #0b0b0b;
       color: #fff;
+
+      /* still vertical layout */
       display: flex;
       flex-direction: column;
-      align-items: center; /* Center all content horizontally */
+
+      /* IMPORTANT: let children be full width so Vega-Lite can read width */
+      align-items: stretch;
     }
-    /* Style for the container of the two bottom charts */
-    .chart-row {
-      display: flex; /* Arrange children side-by-side */
-      gap: 24px; /* Add space between the two charts */
-      width: 100%;
-      max-width: 1200px;
-      justify-content: center;
-    }
-    /* Common style for all chart containers */
+
+    /* generic card style for charts */
     .chart-container {
-      margin: 24px 0;
       background: #111;
       border-radius: 12px;
       padding: 10px;
-      box-sizing: border-box; /* Ensures padding is included in width */
+      box-sizing: border-box;
+
+      /* give it real width so width:'container' works */
+      width: 100%;
+      max-width: 1200px;
+
+      /* center the card in the page */
+      margin: 24px auto;
+      box-shadow: 0 24px 40px rgba(0,0,0,0.6);
     }
-    /* Give the smaller charts a flexible width */
+
+    /* row that holds the bottom two charts side by side */
+    .chart-row {
+      display: flex;
+      flex-wrap: wrap;          /* allow wrap on small screens */
+      gap: 24px;
+      width: 100%;
+      max-width: 1200px;
+      margin: 0 auto 48px auto; /* center row and add bottom space */
+      box-sizing: border-box;
+      padding: 0 10px;
+    }
+
+    /* each small chart in the row */
     .chart-row .chart-container {
-      flex: 1; /* Each chart takes up equal space */
+      flex: 1 1 300px;          /* grow/shrink nicely, min ~300px */
+      margin: 0;                /* row already handles margin */
     }
   </style>
 </head>

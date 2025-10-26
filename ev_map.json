@@ -1,89 +1,102 @@
 {
   "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
-  "background": "#dbeeff",
-  "width": 1366,
-  "height": 768,
-  "title": "EV Charging Stations — Ports (size) & Avg Sessions/Day (color)",
-  "projection": { "type": "equalEarth" },
+  "width": "container",
+  "height": 520,
+  "background": "transparent",
+  "projection": {"type": "naturalEarth1"},
   "layer": [
     {
       "data": {
-        "url": "https://raw.githubusercontent.com/phuayy/FIT3179_Homework_W9/refs/heads/main/output.json",
-        "format": { "type": "topojson", "feature": "ne_110m_graticules_1" }
+        "url": "output (1).json",
+        "format": {"type": "topojson", "feature": "custom.geo"}
       },
       "mark": {
         "type": "geoshape",
-        "fill": null,
-        "stroke": "#9ca3af",
-        "strokeWidth": 0.6,
-        "strokeOpacity": 0.55,
-        "strokeCap": "round"
+        "fill": "#333333",
+        "stroke": "#777777",
+        "strokeWidth": 0.3
       }
     },
     {
       "data": {
-        "url": "https://raw.githubusercontent.com/phuayy/FIT3179_Homework_W9/refs/heads/main/output.json",
-        "format": { "type": "topojson", "feature": "my" }
-      },
-      "mark": { "type": "geoshape", "fill": "#f3f4f6", "stroke": "white" }
-    },
-    {
-      "data": {
-        "url": "https://raw.githubusercontent.com/phuayy/FIT3179_Homework_W9/refs/heads/main/ocm_ports_usage_bumped.csv",
-        "format": { "type": "csv" }
+        "url": "output (1).json",
+        "format": {"type": "topojson", "feature": "custom.geo"}
       },
       "transform": [
         {
-          "calculate": "toNumber(replace(replace(datum.Longitude, /,/g, ''), /\\s+/g, ''))",
-          "as": "lon"
+          "lookup": "properties.name",
+          "from": {
+            "data": {
+              "url": "medals_total.csv",
+              "transform": [
+                {
+                  "joinaggregate": [
+                    {"op": "sum", "field": "Total", "as": "GrandTotal"}
+                  ]
+                },
+                {
+                  "calculate": "(datum.Total / datum.GrandTotal) * 100",
+                  "as": "Percentage"
+                }
+              ]
+            },
+            "key": "Country",
+            "fields": ["Total", "Percentage"]
+          }
         },
         {
-          "calculate": "toNumber(replace(replace(datum.Latitude, /,/g, ''), /\\s+/g, ''))",
-          "as": "lat"
-        },
-        {
-          "calculate": "toNumber(replace(replace(datum.ports_inferred, /,/g, ''), /\\s+/g, ''))",
-          "as": "ports"
-        },
-        {
-          "calculate": "toNumber(replace(replace(datum.avg_sessions_per_day_site, /,/g, ''), /\\s+/g, ''))",
-          "as": "avg_sessions"
-        },
-        { "filter": "!isNaN(datum.lon) && !isNaN(datum.lat)" },
-        {
-          "calculate": "datum.is_fast_dc == 1 ? 'DC fast' : 'AC'",
-          "as": "charger_type"
+          "filter": "datum.Percentage > 0"
         }
       ],
-      "mark": { "type": "circle", "opacity": 0.85, "stroke": "white", "strokeWidth": 0.6 },
+      "mark": {
+        "type": "geoshape",
+        "stroke": "white",
+        "strokeWidth": 0.5
+      },
       "encoding": {
-        "longitude": { "field": "lon", "type": "quantitative" },
-        "latitude": { "field": "lat", "type": "quantitative" },
-        "size": {
-          "field": "ports",
-          "type": "quantitative",
-          "title": "Number of ports",
-          "legend": { "format": ".0f" },
-          "scale": { "range": [6, 220] }
-        },
         "color": {
-          "field": "avg_sessions",
+          "field": "Percentage",
           "type": "quantitative",
-          "title": "Avg sessions/day",
-          "legend": { "format": ".1f" },
-          "scale": { "scheme": "teals" }
+          "title": "Percentage of Total Medals",
+          "scale": {
+            "scheme": "viridis"
+          },
+          "legend": {
+            "titleColor": "#FFFFFF",
+            "labelColor": "#FFFFFF",
+            "format": ".2f"
+          }
         },
         "tooltip": [
-          { "field": "LocationTitle", "title": "Station" },
-          { "field": "AddressLine1", "title": "Address" },
-          { "field": "Town", "title": "Town" },
-          { "field": "StateOrProvince", "title": "State" },
-          { "field": "Postcode", "title": "Postcode" },
-          { "field": "avg_sessions", "title": "Avg sessions/day", "type": "quantitative", "format": ".2f" },
-          { "field": "ports", "title": "Ports", "type": "quantitative", "format": ".0f" },
-          { "field": "lat", "title": "Latitude", "type": "quantitative", "format": ".5f" },
-          { "field": "lon", "title": "Longitude", "type": "quantitative", "format": ".5f" }
+          {
+            "field": "properties.name",
+            "type": "nominal",
+            "title": "Country"
+          },
+          {
+            "field": "Total",
+            "type": "quantitative",
+            "title": "Total Medals"
+          },
+          {
+            "field": "Percentage",
+            "type": "quantitative",
+            "title": "Percentage of Total",
+            "format": ".2f"
+          }
         ]
+      }
+    },
+    {
+      "data": {
+        "url": "output (1).json",
+        "format": {"type": "topojson", "feature": "ne_110m_graticules_30"}
+      },
+      "mark": {
+        "type": "geoshape",
+        "fill": null,
+        "stroke": "#444444",
+        "strokeWidth": 0.5
       }
     }
   ]
